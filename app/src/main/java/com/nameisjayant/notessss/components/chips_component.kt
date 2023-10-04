@@ -1,7 +1,6 @@
 package com.nameisjayant.notessss.components
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -35,6 +34,7 @@ fun AppChipComponent(
         Text(
             text = text, style = TextStyle(
                 fontSize = 14.sp,
+                fontWeight = FontWeight.W600
             )
         )
     }

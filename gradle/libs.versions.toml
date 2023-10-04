@@ -7,8 +7,14 @@ androidx-test-ext-junit = "1.1.5"
 espresso-core = "3.5.1"
 lifecycle-runtime-ktx = "2.6.2"
 activity-compose = "1.7.2"
-compose-bom = "2023.09.01"
+compose-bom = "2023.09.02"
 koltin-realm = '1.11.0'
+hilt-navaigation-compose = "1.0.0"
+dagger-hilt = "2.47"
+hilt-lifecycle-viewmodel = "1.0.0-alpha03"
+lifecycle-runtime-compose = "2.6.2"
+coroutines = "1.7.1"
+
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -28,11 +34,22 @@ material3 = { group = "androidx.compose.material3", name = "material3" }
 realm-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "koltin-realm" }
 realm-sync = { group = "io.realm.kotlin", name = "library-sync", version.ref = "koltin-realm" }
 
+# coroutines
+coroutine-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+coroutine-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+
+# dagger hilt
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navaigation-compose" }
+dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger-hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "dagger-hilt" }
+hilt-lifecycle-viewmodel = { group = "androidx.hilt", name = "hilt-lifecycle-viewmodel", version.ref = "hilt-lifecycle-viewmodel" }
+
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "org-jetbrains-kotlin-android" }
 io-realm-kotlin = { id = "io.realm.kotlin", version.ref = "koltin-realm" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt" }
 
 [bundles]
 

@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.com.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.io.realm.kotlin)
+    alias(libs.plugins.hilt)
+    id("kotlin-kapt")
 }
 
 android {
@@ -12,6 +14,7 @@ android {
     defaultConfig {
         applicationId = "com.nameisjayant.notessss"
         minSdk = 24
+        //noinspection EditedTargetSdkVersion
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -69,7 +72,17 @@ dependencies {
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
 
+    // dagger hilt
+    implementation(libs.dagger.hilt)
+    kapt(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+    //implementation(libs.hilt.lifecycle.viewmodel)
+
     // realm db
     implementation(libs.realm.base)
     implementation(libs.realm.sync)
+
+    //coroutines
+    implementation(libs.coroutine.android)
+    implementation(libs.coroutine.core)
 }
