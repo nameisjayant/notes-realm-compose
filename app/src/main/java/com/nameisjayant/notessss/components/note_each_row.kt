@@ -25,12 +25,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nameisjayant.notessss.data.local.model.Notes
+import org.mongodb.kbson.ObjectId
 
 
 @Composable
 fun NoteEachRow(
     modifier: Modifier = Modifier,
-    note: Notes
+    note: Notes,
+    deleteNote: (ObjectId) -> Unit
 ) {
 
     Box(
@@ -57,7 +59,9 @@ fun NoteEachRow(
                     modifier = Modifier.weight(1f)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
-                IconButton(onClick = {}, modifier = Modifier.size(24.dp)) {
+                IconButton(onClick = {
+                    deleteNote(note.id)
+                }, modifier = Modifier.size(24.dp)) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = null,

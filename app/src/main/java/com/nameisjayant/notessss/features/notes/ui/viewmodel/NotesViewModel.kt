@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.ApiStatus
+import org.mongodb.kbson.ObjectId
 import javax.inject.Inject
 import kotlin.Exception
 
@@ -20,6 +22,10 @@ class NotesViewModel @Inject constructor(
 
     private val _notesAddedEventFlow: MutableSharedFlow<RealmStates<Notes>> = MutableSharedFlow()
     var notesAddedEventFlow = _notesAddedEventFlow.asSharedFlow()
+        private set
+
+    private val _deleteNoteEventFlow: MutableSharedFlow<RealmStates<String>> = MutableSharedFlow()
+    var deleteNoteEventFlow = _deleteNoteEventFlow.asSharedFlow()
         private set
 
     private val _notesEventFlow: MutableStateFlow<CommonResponseList<Notes>> = MutableStateFlow(
@@ -56,6 +62,16 @@ class NotesViewModel @Inject constructor(
                 }
 
             }
+
+            is NotesEvent.DeleteNote -> {
+                _deleteNoteEventFlow.emit(RealmStates.Loading)
+                try {
+                    repository.deleteNote(event.id)
+                    _deleteNoteEventFlow.emit(RealmStates.Success("Note Deleted"))
+                } catch (e: Exception) {
+                    _deleteNoteEventFlow.emit(RealmStates.Failure(e.message.toString()))
+                }
+            }
         }
     }
 }
@@ -70,9 +86,7 @@ sealed class RealmStates<out T> {
 }
 
 data class CommonResponseList<T>(
-    val data: List<T> = emptyList(),
-    val error: String = "",
-    val isLoading: Boolean = false
+    val data: List<T> = emptyList(), val error: String = "", val isLoading: Boolean = false
 )
 
 
@@ -81,5 +95,6 @@ sealed class NotesEvent {
 
     data class AddNotesEvent(val note: Notes) : NotesEvent()
     data object ShowNotes : NotesEvent()
+    data class DeleteNote(val id: ObjectId) : NotesEvent()
 
 }

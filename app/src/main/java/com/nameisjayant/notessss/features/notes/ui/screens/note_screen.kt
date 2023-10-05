@@ -90,14 +90,15 @@ fun NoteScreen(
             Spacer(modifier = Modifier.height(20.dp))
             when (selected) {
                 0 -> {
-                    if (notes.data.isNotEmpty())
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            items(notes.data, key = { it.id.toString() }) {
-                                NoteEachRow(note = it)
+                    if (notes.data.isNotEmpty()) LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(notes.data, key = { it.id.toString() }) {
+                            NoteEachRow(note = it) { deleteId ->
+                                viewModel.onEvent(NotesEvent.DeleteNote(deleteId))
                             }
                         }
+                    }
                 }
             }
 
@@ -106,12 +107,31 @@ fun NoteScreen(
         FloatingActionButton(
             onClick = {
                 navHostController.navigate(ScreenDestination.AddNote.route)
-            }, modifier = Modifier
+            },
+            modifier = Modifier
                 .padding(20.dp)
                 .align(Alignment.BottomEnd),
             containerColor = Color(0XFFE4FFE6)
         ) {
             Icon(imageVector = Icons.Default.Add, contentDescription = null)
+        }
+    }
+    LaunchedEffect(key1 = Unit) {
+        viewModel.deleteNoteEventFlow.collectLatest {
+            when (it) {
+                is RealmStates.Success -> {
+                    viewModel.onEvent(NotesEvent.ShowNotes)
+                }
+
+                is RealmStates.Failure -> {
+                    context.showToast(it.error)
+                }
+
+                RealmStates.Loading -> {
+
+                }
+
+            }
         }
     }
 
