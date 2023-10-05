@@ -14,6 +14,7 @@ dagger-hilt = "2.47"
 hilt-lifecycle-viewmodel = "1.0.0-alpha03"
 lifecycle-runtime-compose = "2.6.2"
 coroutines = "1.7.1"
+compose-navigation = "2.7.3"
 
 
 [libraries]
@@ -31,8 +32,14 @@ ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
+
+# realm
 realm-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "koltin-realm" }
 realm-sync = { group = "io.realm.kotlin", name = "library-sync", version.ref = "koltin-realm" }
+
+# compose Navigation
+compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "compose-navigation" }
+
 
 # coroutines
 coroutine-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
@@ -42,7 +49,6 @@ coroutine-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-c
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navaigation-compose" }
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger-hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "dagger-hilt" }
-hilt-lifecycle-viewmodel = { group = "androidx.hilt", name = "hilt-lifecycle-viewmodel", version.ref = "hilt-lifecycle-viewmodel" }
 
 
 [plugins]

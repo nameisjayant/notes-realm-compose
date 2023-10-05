@@ -76,7 +76,6 @@ dependencies {
     implementation(libs.dagger.hilt)
     kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
-    //implementation(libs.hilt.lifecycle.viewmodel)
 
     // realm db
     implementation(libs.realm.base)
@@ -85,4 +84,7 @@ dependencies {
     //coroutines
     implementation(libs.coroutine.android)
     implementation(libs.coroutine.core)
+
+    // navigation
+    implementation(libs.compose.navigation)
 }
