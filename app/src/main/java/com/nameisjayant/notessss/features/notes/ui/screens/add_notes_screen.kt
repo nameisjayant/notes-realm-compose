@@ -1,5 +1,6 @@
 package com.nameisjayant.notessss.features.notes.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,11 +36,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.nameisjayant.notessss.R
 import com.nameisjayant.notessss.components.TextfieldComponent
-import com.nameisjayant.notessss.data.local.model.Notes
+import com.nameisjayant.notessss.data.local.model.Note
 import com.nameisjayant.notessss.features.notes.ui.viewmodel.NotesEvent
 import com.nameisjayant.notessss.features.notes.ui.viewmodel.NotesViewModel
 import com.nameisjayant.notessss.features.notes.ui.viewmodel.RealmStates
@@ -48,13 +49,21 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun AddNotes(
-    navHostController: NavHostController,
-    viewModel: NotesViewModel = hiltViewModel()
+    navHostController: NavHostController, viewModel: NotesViewModel
 ) {
-
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
+    val currentNote by viewModel.editNote.collectAsState()
+    var title by remember {
+        mutableStateOf(
+            if (currentNote == null) "" else currentNote?.title ?: ""
+        )
+    }
+    var description by remember {
+        mutableStateOf(
+            if (currentNote == null) "" else currentNote?.description ?: ""
+        )
+    }
     val context = LocalContext.current
+
 
     Box(
         modifier = Modifier
@@ -67,69 +76,66 @@ fun AddNotes(
                 .fillMaxSize()
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 IconButton(onClick = {
                     navHostController.navigateUp()
+                    viewModel.setNote(null)
                 }, modifier = Modifier.size(24.dp)) {
                     Icon(
-                        imageVector = Icons.Default.Close, contentDescription = null,
-                        tint = Color.Black,
-
-                        )
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                        tint = Color.Black
+                    )
                 }
                 Text(
-                    text = stringResource(R.string.add_note), style = TextStyle(
-                        color = Color.Black,
-                        fontWeight = FontWeight.W600,
-                        fontSize = 20.sp
+                    text = if (currentNote == null) stringResource(R.string.add_note) else stringResource(
+                        R.string.edit_note
+                    ), style = TextStyle(
+                        color = Color.Black, fontWeight = FontWeight.W600, fontSize = 20.sp
                     )
                 )
-                if (title.isNotEmpty() && description.isNotEmpty())
-                    IconButton(onClick = {
+                if (title.isNotEmpty() && description.isNotEmpty()) IconButton(onClick = {
+                    if (currentNote == null)
                         viewModel.onEvent(
                             NotesEvent.AddNotesEvent(
-                                Notes(
-                                    title = title,
-                                    description = description
+                                Note(
+                                    title = title, description = description
                                 )
                             )
                         )
-                    }, modifier = Modifier.size(24.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.Check, contentDescription = null,
-                            tint = Color.Black
+                    else viewModel.onEvent(
+                        NotesEvent.UpdateNoteEvent(
+                            Note(
+                                title = title, description = description,
+                                id = currentNote?.id ?: ""
+                            )
                         )
-                    }
-                else
-                    Box {}
+                    )
+                }, modifier = Modifier.size(24.dp)) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                        tint = Color.Black
+                    )
+                }
+                else Box {}
             }
             Spacer(modifier = Modifier.height(20.dp))
             Divider(
-                modifier = Modifier.fillMaxWidth(),
-                color = Color.LightGray.copy(alpha = 0.3f)
+                modifier = Modifier.fillMaxWidth(), color = Color.LightGray.copy(alpha = 0.3f)
             )
             Spacer(modifier = Modifier.height(20.dp))
             TextfieldComponent(
-                value = title,
-                placeholder = stringResource(id = R.string.title),
-                style = TextStyle(
-                    color = Color.Black,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.W600
-                ),
-                onValueChange = {
+                value = title, placeholder = stringResource(id = R.string.title), style = TextStyle(
+                    color = Color.Black, fontSize = 20.sp, fontWeight = FontWeight.W600
+                ), onValueChange = {
                     title = it
-                },
-                maxLine = 1,
-                keyboardOptions = KeyboardOptions(
+                }, maxLine = 1, keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next
                 )
             )
-            Spacer(modifier = Modifier.height(20.dp))
-            TextfieldComponent(
-                value = description,
+            TextfieldComponent(value = description,
                 placeholder = stringResource(id = R.string.add_note_),
                 style = TextStyle(
                     color = Color.DarkGray,
@@ -137,9 +143,29 @@ fun AddNotes(
                 ),
                 onValueChange = {
                     description = it
-                }
-            )
+                })
 
+        }
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.updateNoteEventFlow.collectLatest {
+            when (it) {
+                is RealmStates.Success -> {
+                    viewModel.setNote(null)
+                    context.showToast(context.getString(R.string.note_updated))
+                    navHostController.navigateUp()
+                }
+
+                is RealmStates.Failure -> {
+                    context.showToast(it.error)
+                }
+
+                RealmStates.Loading -> {
+
+                }
+
+            }
         }
     }
 
@@ -147,6 +173,7 @@ fun AddNotes(
         viewModel.notesAddedEventFlow.collectLatest {
             when (it) {
                 is RealmStates.Success -> {
+                    viewModel.setNote(null)
                     context.showToast(context.getString(R.string.added))
                     navHostController.navigateUp()
                 }
@@ -161,6 +188,10 @@ fun AddNotes(
 
             }
         }
+    }
+    BackHandler {
+        navHostController.navigateUp()
+        viewModel.setNote(null)
     }
 
 }

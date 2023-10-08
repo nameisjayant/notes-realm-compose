@@ -1,6 +1,6 @@
 package com.nameisjayant.notessss.di
 
-import com.nameisjayant.notessss.data.local.model.Notes
+import com.nameisjayant.notessss.data.local.model.Note
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,7 +15,7 @@ object RealmConfiguration {
     @Provides
     @Singleton
     fun providesRealmConfigs(): Realm {
-        val config = RealmConfiguration.create(setOf(Notes::class))
+        val config = RealmConfiguration.create(setOf(Note::class))
         return Realm.open(config)
     }
 

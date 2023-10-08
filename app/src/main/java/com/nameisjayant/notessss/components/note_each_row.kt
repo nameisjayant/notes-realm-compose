@@ -1,7 +1,8 @@
 package com.nameisjayant.notessss.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,23 +19,25 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nameisjayant.notessss.data.local.model.Notes
+import com.nameisjayant.notessss.data.local.model.Note
 import org.mongodb.kbson.ObjectId
 
 
 @Composable
 fun NoteEachRow(
     modifier: Modifier = Modifier,
-    note: Notes,
-    deleteNote: (ObjectId) -> Unit
+    note: Note,
+    editNote: () -> Unit,
+    deleteNote: (String) -> Unit
 ) {
-
+    val interactionSource = remember { MutableInteractionSource() }
     Box(
         modifier = modifier
             .padding(vertical = 10.dp)
@@ -42,6 +45,11 @@ fun NoteEachRow(
             .background(
                 Color(0XFFE4FFE6),
                 RoundedCornerShape(8.dp)
+            )
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = editNote
             )
     ) {
         Column(

@@ -16,7 +16,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -42,7 +41,6 @@ import androidx.navigation.NavHostController
 import com.nameisjayant.notessss.R
 import com.nameisjayant.notessss.components.AppChipComponent
 import com.nameisjayant.notessss.components.NoteEachRow
-import com.nameisjayant.notessss.data.local.model.Notes
 import com.nameisjayant.notessss.features.notes.ui.viewmodel.NotesEvent
 import com.nameisjayant.notessss.features.notes.ui.viewmodel.NotesViewModel
 import com.nameisjayant.notessss.features.notes.ui.viewmodel.RealmStates
@@ -53,7 +51,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun NoteScreen(
-    navHostController: NavHostController, viewModel: NotesViewModel = hiltViewModel()
+    navHostController: NavHostController, viewModel: NotesViewModel
 ) {
 
     var selected by remember { mutableIntStateOf(0) }
@@ -93,9 +91,12 @@ fun NoteScreen(
                     if (notes.data.isNotEmpty()) LazyColumn(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        items(notes.data, key = { it.id.toString() }) {
-                            NoteEachRow(note = it) { deleteId ->
-                                viewModel.onEvent(NotesEvent.DeleteNote(deleteId))
+                        items(notes.data, key = { it.id }) {
+                            NoteEachRow(note = it, editNote = {
+                                viewModel.setNote(it)
+                                navHostController.navigate(ScreenDestination.AddNote.route)
+                            }) { deleteId ->
+                                viewModel.onEvent(NotesEvent.DeleteNoteEvent(deleteId))
                             }
                         }
                     }
@@ -120,7 +121,7 @@ fun NoteScreen(
         viewModel.deleteNoteEventFlow.collectLatest {
             when (it) {
                 is RealmStates.Success -> {
-                    viewModel.onEvent(NotesEvent.ShowNotes)
+                    viewModel.onEvent(NotesEvent.ShowNotesEvent)
                 }
 
                 is RealmStates.Failure -> {
@@ -136,7 +137,7 @@ fun NoteScreen(
     }
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.onEvent(NotesEvent.ShowNotes)
+        viewModel.onEvent(NotesEvent.ShowNotesEvent)
     }
 }
 
